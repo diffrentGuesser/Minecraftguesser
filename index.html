@@ -6,7 +6,7 @@
     <title>Minecraft Block Guess</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
-        #blockImage { image-rendering: pixelated; width: 128px; height: 128px; }
+        #blockImage { image-rendering: pixelated; width: 32px; height: 32px; }
         #guessInput { margin-top: 10px; }
     </style>
 </head>
@@ -29,10 +29,11 @@
             return `textures/${currentTexture}`;
         }
 
-        function updateImage(size) {
+        function updateImage(scale) {
             const img = document.getElementById("blockImage");
-            img.style.width = `${size * 32}px`;
-            img.style.height = `${size * 32}px`;
+            img.style.width = `${scale * 16}px`;
+            img.style.height = `${scale * 16}px`;
+            img.style.imageRendering = "pixelated";
             img.src = getRandomTexture();
         }
 
