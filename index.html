@@ -6,50 +6,54 @@
     <title>Minecraft Block Guess</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
-        #blockImage { image-rendering: pixelated; width: 32px; height: 32px; }
+        canvas { image-rendering: pixelated; width: 128px; height: 128px; }
         #guessInput { margin-top: 10px; }
     </style>
 </head>
 <body>
     <h1>Guess the Minecraft Block!</h1>
-    <img id="blockImage" src="" alt="Block Texture">
+    <canvas id="blockCanvas" width="16" height="16"></canvas>
     <br>
     <input type="text" id="guessInput" placeholder="Enter block name">
     <button onclick="checkGuess()">Submit</button>
     <p id="message"></p>
 
     <script>
-        const textures = ["stone.png", "dirt.png", "grass_block.png", "oak_log.png"];
+        const textures = ["stone.png", "dirt.png", "grass_block.png", "oak_log.png"]; // Add more textures
         let currentTexture = "";
         let stage = 0;
         let timer;
+        const scales = [2, 4, 8, 16]; // Pixelation levels
+        const canvas = document.getElementById("blockCanvas");
+        const ctx = canvas.getContext("2d");
 
         function getRandomTexture() {
             currentTexture = textures[Math.floor(Math.random() * textures.length)];
             return `textures/${currentTexture}`;
         }
 
-        function updateImage(scale) {
-            const img = document.getElementById("blockImage");
-            img.style.width = `${scale * 16}px`;
-            img.style.height = `${scale * 16}px`;
-            img.style.imageRendering = "pixelated";
+        function pixelateImage(scale) {
+            const img = new Image();
             img.src = getRandomTexture();
+            img.onload = function () {
+                ctx.clearRect(0, 0, 16, 16);
+                ctx.drawImage(img, 0, 0, scale, scale); // Downscale
+                ctx.drawImage(canvas, 0, 0, scale, scale, 0, 0, 16, 16); // Upscale
+            };
         }
 
         function startGame() {
             stage = 0;
-            updateImage(2);
+            pixelateImage(scales[stage]);
             timer = setInterval(nextStage, 10000);
         }
 
         function nextStage() {
-            stage++;
-            if (stage === 1) updateImage(4);
-            else if (stage === 2) updateImage(8);
-            else {
+            if (stage < scales.length - 1) {
+                stage++;
+                pixelateImage(scales[stage]);
+            } else {
                 clearInterval(timer);
-                updateImage(16);
             }
         }
 
