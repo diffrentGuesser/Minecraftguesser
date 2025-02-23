@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Block Guess</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #blockImage { image-rendering: pixelated; width: 128px; height: 128px; }
+        #guessInput { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Guess the Minecraft Block!</h1>
+    <img id="blockImage" src="" alt="Block Texture">
+    <br>
+    <input type="text" id="guessInput" placeholder="Enter block name">
+    <button onclick="checkGuess()">Submit</button>
+    <p id="message"></p>
+
+    <script>
+        const textures = ["stone.png", "dirt.png", "grass_block.png", "oak_log.png"];
+        let currentTexture = "";
+        let stage = 0;
+        let timer;
+
+        function getRandomTexture() {
+            currentTexture = textures[Math.floor(Math.random() * textures.length)];
+            return `textures/${currentTexture}`;
+        }
+
+        function updateImage(size) {
+            const img = document.getElementById("blockImage");
+            img.style.width = `${size * 32}px`;
+            img.style.height = `${size * 32}px`;
+            img.src = getRandomTexture();
+        }
+
+        function startGame() {
+            stage = 0;
+            updateImage(2);
+            timer = setInterval(nextStage, 10000);
+        }
+
+        function nextStage() {
+            stage++;
+            if (stage === 1) updateImage(4);
+            else if (stage === 2) updateImage(8);
+            else {
+                clearInterval(timer);
+                updateImage(16);
+            }
+        }
+
+        function checkGuess() {
+            const guess = document.getElementById("guessInput").value.toLowerCase();
+            if (guess + ".png" === currentTexture) {
+                document.getElementById("message").innerText = "Correct! It's " + guess;
+                clearInterval(timer);
+            } else {
+                document.getElementById("message").innerText = "Try again!";
+            }
+        }
+
+        window.onload = startGame;
+    </script>
+</body>
+</html>
