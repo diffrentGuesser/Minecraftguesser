@@ -5,13 +5,17 @@ import os
 app = Flask(__name__)
 
 TEXTURE_FOLDER = "textures"
+TEMP_FOLDER = "temp"
+
+# Ensure temp folder exists
+os.makedirs(TEMP_FOLDER, exist_ok=True)
 
 def pixelate_image(image_path, scale):
-    """ Resize image to create a pixelated effect """
+    """ Resizes the image to simulate pixelation. """
     img = Image.open(image_path)
     img = img.resize((scale, scale), Image.NEAREST)  # Downscale
-    img = img.resize((16, 16), Image.NEAREST)  # Upscale back
-    pixelated_path = f"temp/{os.path.basename(image_path).replace('.png', '')}_{scale}.png"
+    img = img.resize((16, 16), Image.NEAREST)  # Upscale back to 16x16
+    pixelated_path = os.path.join(TEMP_FOLDER, f"{os.path.basename(image_path)}_{scale}.png")
     img.save(pixelated_path)
     return pixelated_path
 
@@ -28,5 +32,4 @@ def get_texture():
     return send_file(pixelated_path, mimetype="image/png")
 
 if __name__ == "__main__":
-    os.makedirs("temp", exist_ok=True)
     app.run(debug=True)
